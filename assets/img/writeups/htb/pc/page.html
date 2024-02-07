@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>pc</title>
+</head><body><img src="image.png" /><br/>
+<br/>
+Let's start off with a port scan<br/>
+<br/>
+<img src="image 2.png" /><br/>
+<br/>
+That port seems strange let's see if we can connect to it.<br/>
+<br/>
+<img src="image 3.png" /><br/>
+<br/>
+<img src="image 5.png" /><br/>
+<br/>
+<img src="image 6.png" /><br/>
+<br/>
+<img src="image 7.png" /><br/>
+<br/>
+<br/>
+<br/>
+Guess its time to ask Google...<br/>
+<br/>
+<br/>
+<img src="image 4.png" /><br/>
+<br/>
+<br/>
+<img src="image 8.png" /><br/>
+<br/>
+This looks interesting but how can we connect to a gRPC server... Eventually I stumbled across these.<br/>
+<br/>
+<br/>
+<img src="image 9.png" /><br/>
+<br/>
+<img src="image 11.png" /><br/>
+<br/>
+<img src="image 10.png" /><br/>
+<br/>
+<br/>
+Lets try connecting using grpcui.<br/>
+&nbsp;<br/>
+<img src="image 13.png" /><br/>
+<br/>
+Let's try logging in using admin:admin and click invoke to send the request.<br/>
+<br/>
+<img src="image 12.png" /><br/>
+<br/>
+Inside the response tab we see a message with an id # of 587 along with a token <br/>
+<br/>
+<img src="image 14.png" /><br/>
+<br/>
+<br/>
+Now lets send another request<br/>
+<br/>
+<img src="image 15.png" /><br/>
+<br/>
+<img src="image 16.png" /><br/>
+<br/>
+The box was reset in the middle of the writeup so I had to repeat the above steps and the id # changed..<br/>
+Let's continue, first turn on foxyproxy then open up burp suite and capture that getInfo request again. &nbsp;<br/>
+<br/>
+<img src="image 40.png" /><br/>
+<br/>
+<img src="image 17.png" /><br/>
+<br/>
+<br/>
+and we get the same response message, **Will update soon**.<br/>
+Right click on the request and copy to file. Save this file and name it whatever you want .req (ex: burp.req)<br/>
+<br/>
+<img src="image 18.png" /><br/>
+<br/>
+We can test to see the id parameter is vulnerable to SQLI (sql injection) using our saved request and a tool called sqlmap.<br/>
+<br/>
+<img src="image 19.png" /><br/>
+<br/>
+<img src="image 21.png" /><br/>
+<br/>
+<img src="image 20.png" /><br/>
+<br/>
+Now lets dump the database info...<br/>
+<br/>
+<img src="image 22.png" /><br/>
+<br/>
+And we get a new message along with 2 usernames and passwords that are stored in this database.<br/>
+<br/>
+<img src="image 23.png" /><br/>
+<br/>
+Let's try to login to this new user.<br/>
+<br/>
+<img src="image 24.png" /><br/>
+<br/>
+<img src="image 28.png" /><br/>
+<br/>
+And we are in and got the user.txt flag, next step is to escalate our privileges.<br/>
+Started to look for low hanging privesc's manually.<br/>
+<br/>
+<img src="image 25.png" /><br/>
+<br/>
+<img src="image 26.png" /><br/>
+<br/>
+Ok we can use LinPEAS to enumerate this system faster... <br/>
+<br/>
+<img src="image 27.png" /><br/>
+<br/>
+<img src="image 29.png" /><br/>
+<br/>
+<img src="image 30.png" /><br/>
+<br/>
+<img src="image 31.png" /><br/>
+<br/>
+Let's see whats on 127.0.0.1:8000 we can forward the port over to a port on our machine..<br/>
+<br/>
+<img src="image 38.png" /><br/>
+<br/>
+now if we goto 127.0.0.1:9000 in our web browser<br/>
+<br/>
+<img src="image 39.png" /><br/>
+<br/>
+<br/>
+Searching on google for pyload exploit we see a few<br/>
+<br/>
+<img src="image 32.png" /><br/>
+<br/>
+<img src="image 33.png" /><br/>
+<br/>
+we will copy this exploit to our notes<br/>
+<br/>
+<img src="image 34.png" /><br/>
+<br/>
+if we head back to the pyload login page on our machine and intercept a login request we can insert our exploit<br/>
+<br/>
+<img src="image 41.png" /><br/>
+<br/>
+Right click and send to repeater, turn intercept off then head to the repeater tab.<br/>
+We will modify this request with our exploit <br/>
+<br/>
+<img src="image 43.png" /><br/>
+<br/>
+If we cd to /tmp we can see that our payload went through and the root user created a file called pwnd.<br/>
+<br/>
+<img src="image 35.png" /><br/>
+<br/>
+Time to add a reverse shell into our payload instead of creating a file. Start a netcat listener.<br/>
+<br/>
+<img src="image 44.png" /><br/>
+<br/>
+We can use revshells.com to generate the reverse shell payload, just enter your ip and port #.<br/>
+<br/>
+<img src="image 36.png" /><br/>
+<br/>
+**You will have to url encode the `&amp;` (%26) and add a `+` to any spaces inside our revshell payload.**<br/>
+The finished exploit will look like this, click send. <br/>
+<br/>
+<img src="image 42.png" /><br/>
+<br/>
+And if we check our netcat listener we have a root shell. Time to get our last flag.<br/>
+<br/>
+<img src="image 37.png" /><br/>
+<br/>
+</body></html>

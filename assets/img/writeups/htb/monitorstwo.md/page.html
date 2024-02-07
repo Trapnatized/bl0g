@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>monitorsTwo.md</title>
+</head><body>First let's start off by scanning for open ports.<br/>
+<br/>
+<img src="image.png" /><br/>
+<br/>
+Heading over to port 80 we find a login page that also tells us which version # is running.<br/>
+<br/>
+<img src="image 2.png" /><br/>
+<br/>
+Let's look for an exploit...<br/>
+<br/>
+<img src="image 3.png" /><br/>
+<br/>
+Let's use this exploit [] since it works right out of the box...<br/>
+we can either ` git clone https://github.com/FredBrave/CVE-2022-46169-CACTI-1.2.22.git ` or <br/>
+<br/>
+<img src="image 4.png" /><br/>
+<br/>
+copy &nbsp;the code and save it to a new file `exploit.py` <br/>
+<br/>
+<img src="image 5.png" /><br/>
+<br/>
+Start a netcat listener <br/>
+<br/>
+<img src="image 6.png" /><br/>
+<br/>
+<br/>
+Now lets trigger the exploit<br/>
+<br/>
+<img src="image 7.png" /><br/>
+<br/>
+and if we check our netcat listener we see we have a shell.<br/>
+<br/>
+<img src="image 8.png" /><br/>
+<br/>
+Let's run linPEAS and see if we can find anything interesting<br/>
+<br/>
+<img src="image 9.png" /><br/>
+<br/>
+<img src="image 10.png" /><br/>
+<br/>
+`/sbin/capsh` has the SUID bit set.. Let's go check out [gtfobins.github.io] <br/>
+<br/>
+<img src="image 11.png" /><br/>
+<br/>
+`/sbin/capsh --gid=0 --uid=0 --`<br/>
+<br/>
+<img src="image 12.png" /><br/>
+<br/>
+we are root.... But i believe we are stuck inside of a docker container<br/>
+<br/>
+<img src="image 13.png" /><br/>
+<br/>
+So lets break out!!!<br/>
+<br/>
+some other info from linpeas<br/>
+<img src="image 21.png" /><br/>
+<br/>
+<br/>
+<img src="image 20.png" /><br/>
+<br/>
+`mysql --host=db --user=root --password=root cacti -e 'show tables'`<br/>
+<img src="image 14.png" /><br/>
+<br/>
+Ok let's look inside user_auth.<br/>
+`mysql --host=db --user=root --password=root cacti -e 'select * from user_auth'`<br/>
+<br/>
+<img src="image 15.png" /><br/>
+<br/>
+And we find a couple hashes along with names and emails.. Maybe we can crack the hashes and get the passwords...<br/>
+<br/>
+<img src="image 22.png" /><br/>
+<br/>
+well that was easy... Now we have Marcus's password wonder if we can log in.<br/>
+<br/>
+<img src="image 17.png" /><br/>
+&nbsp;<br/>
+Looks like we are inside docker containers....<br/>
+Lets grab the user.txt flag.<br/>
+<br/>
+<img src="image 18.png" /><br/>
+<br/>
+<br/>
+Ok let's check what version of docker is running<br/>
+<br/>
+<img src="image 19.png" /><br/>
+<br/>
+Any exploits?? Let's check it out..<br/>
+<br/>
+<img src="image 23.png" /><br/>
+<br/>
+Here is the readme.md for this exploit...<br/>
+<br/>
+<img src="image 26.png" /><br/>
+<br/>
+Again we will just copy the raw file and paste into a new file called `test.sh` to test this out.<br/>
+<br/>
+<img src="image 25.png" /><br/>
+<br/>
+First let's change directory to /tmp and then create our `test.sh` file.. Once complete we will need to make this file executable. <br/>
+<br/>
+<img src="image 24.png" /><br/>
+<br/>
+So according to the README, the only step i'm missing is to set the SUID bit on /bin/bash inside the container..<br/>
+Looks like the /bin/bash binary already has the SUID bit set.... But here's the command to set it anyways...<br/>
+It's always a good idea to make a backup of any binary before modifying it just incase something happens you'll have a way to revert back to original..<br/>
+<br/>
+<img src="image 27.png" /><br/>
+<br/>
+Ok time to run the exploit and see if it works..<br/>
+<br/>
+<img src="image 16.png" /><br/>
+<br/>
+Looks like we got a shell but it closed itself.... Lets follow this new path and manually execute ./bin/bash -p<br/>
+<br/>
+<img src="image 28.png" /><br/>
+<br/>
+Looks like our euid is root and that is enough to read &nbsp;/root/root.txt..<br/>
+But if we want full root privileges let's take it one step further...<br/>
+<br/>
+<img src="image 29.png" /><br/>
+<br/>
+And we now have full root access to this machine...<br/>
+<br/>
+<img src="image 30.png" /><br/>
+<br/>
+<br/>
+</body></html>
