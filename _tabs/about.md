@@ -48,7 +48,7 @@ Experience with:
     - Web
     - Cryptic ciphers
 
-# Education
+# Training
 
 [TryHackMe Profile](https://tryhackme.com/p/Trapnatized)
 
