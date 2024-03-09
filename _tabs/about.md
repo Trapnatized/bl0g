@@ -4,7 +4,7 @@ icon: fas fa-info-circle
 order: 5
 ---
 
-<!--- Short introduction{: .prompt-info } --->
+
 
 Avid cybersecurity enthusiast with a strong focus on bug bounty hunting and web app penetration testing.
 
