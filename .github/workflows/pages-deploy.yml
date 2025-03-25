@@ -28,6 +28,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/upload-artifact@v3
+        with:
+          name: dummy
+          path: .
+          retention-days: 1
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -55,11 +60,6 @@ jobs:
           bundle exec htmlproofer _site \
             \-\-disable-external=true \
             \-\-ignore-urls "/^http:\/\/127.0.0.1/,/^http:\/\/0.0.0.0/,/^http:\/\/localhost/"
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v3
-        with:
-          path: "_site${{ steps.pages.outputs.base_path }}"
 
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v2
